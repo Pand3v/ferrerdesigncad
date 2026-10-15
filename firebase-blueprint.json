@@ -1,0 +1,368 @@
+{
+  "entities": {
+    "AuthorizedUser": {
+      "title": "AuthorizedUser",
+      "description": "Allowed user accounts that can access Alma Print Cad",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "name": {
+          "type": "string",
+          "description": "User display name"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["super_admin", "operador", "admin"],
+          "description": "Nível de acesso do usuário"
+        },
+        "addedAt": {
+          "type": "string",
+          "description": "Timestamp when added"
+        },
+        "addedBy": {
+          "type": "string",
+          "description": "UID or email of user who added this authorization"
+        }
+      },
+      "required": ["email"]
+    },
+    "CompanySettings": {
+      "title": "CompanySettings",
+      "description": "Fixed company details for ALMA PRINT used on headers and contracts",
+      "type": "object",
+      "properties": {
+        "logoUrl": {
+          "type": "string",
+          "description": "Base64 or image URL for company logo"
+        },
+        "tradeName": {
+          "type": "string",
+          "description": "Nome fantasia (ALMA PRINT - Gráfica e Embalagens)"
+        },
+        "legalName": {
+          "type": "string",
+          "description": "Razão Social (ALMA NEGÓCIOS E SERVIÇOS LTDA)"
+        },
+        "cnpj": {
+          "type": "string",
+          "description": "CNPJ da empresa"
+        },
+        "unit": {
+          "type": "string",
+          "description": "Unidade (ex: Campinas - SP)"
+        },
+        "address": {
+          "type": "string",
+          "description": "Endereço completo"
+        },
+        "zipCode": {
+          "type": "string",
+          "description": "CEP"
+        },
+        "city": {
+          "type": "string",
+          "description": "Cidade"
+        },
+        "state": {
+          "type": "string",
+          "description": "Estado (UF)"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Telefone e WhatsApp"
+        },
+        "email": {
+          "type": "string",
+          "description": "E-mail de contato"
+        },
+        "instagram": {
+          "type": "string",
+          "description": "Perfil do Instagram"
+        },
+        "headerServices": {
+          "type": "string",
+          "description": "Texto dos serviços do cabeçalho (OFFSET, DIGITAL, EMBALAGENS, BRINDES, SIGN)"
+        },
+        "pixKey": {
+          "type": "string",
+          "description": "Chave Pix para pagamentos"
+        },
+        "nextOrderNumber": {
+          "type": "number",
+          "description": "Próximo número sequencial para pedidos"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp da última atualização"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Email de quem fez a alteração"
+        }
+      },
+      "required": ["tradeName", "legalName"]
+    },
+    "Client": {
+      "title": "Client",
+      "description": "Customer registry in Alma Print Cad",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Razão social ou nome do cliente",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "cpfCnpj": {
+          "type": "string",
+          "description": "CPF ou CNPJ do cliente",
+          "maxLength": 30
+        },
+        "contactPerson": {
+          "type": "string",
+          "description": "Nome da pessoa de contato",
+          "maxLength": 200
+        },
+        "phone": {
+          "type": "string",
+          "description": "Telefone ou WhatsApp do cliente",
+          "maxLength": 50
+        },
+        "email": {
+          "type": "string",
+          "description": "E-mail do cliente",
+          "maxLength": 150
+        },
+        "address": {
+          "type": "string",
+          "description": "Endereço completo",
+          "maxLength": 400
+        },
+        "zipCode": {
+          "type": "string",
+          "description": "CEP",
+          "maxLength": 20
+        },
+        "city": {
+          "type": "string",
+          "description": "Cidade",
+          "maxLength": 100
+        },
+        "state": {
+          "type": "string",
+          "description": "Estado",
+          "maxLength": 10
+        },
+        "notes": {
+          "type": "string",
+          "description": "Observações gerais sobre o cliente",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Data de criação ISO"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Data da última atualização ISO"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "E-mail de quem cadastrou"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "E-mail de quem fez a última alteração"
+        }
+      },
+      "required": ["name"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Budget, Order or Service Order document",
+      "type": "object",
+      "properties": {
+        "orderNumber": {
+          "type": "string",
+          "description": "Número do pedido ex: 008578",
+          "maxLength": 20
+        },
+        "orderNumberInt": {
+          "type": "number",
+          "description": "Número sequencial numérico para ordenação"
+        },
+        "date": {
+          "type": "string",
+          "description": "Data do pedido DD/MM/AAAA ou ISO",
+          "maxLength": 20
+        },
+        "status": {
+          "type": "string",
+          "enum": ["orcamento", "aprovado", "em_producao", "concluido", "cancelado"],
+          "description": "Status do documento"
+        },
+        "clientId": {
+          "type": "string",
+          "description": "ID do cliente cadastrado caso vinculado"
+        },
+        "clientSnapshot": {
+          "type": "object",
+          "description": "Cópia estática dos dados do cliente no momento da gravação"
+        },
+        "companySnapshot": {
+          "type": "object",
+          "description": "Cópia estática dos dados da Alma Print contratada"
+        },
+        "items": {
+          "type": "array",
+          "description": "Lista de itens com quantidade, descrição multilinhas e valor do item"
+        },
+        "totalGeneralCents": {
+          "type": "number",
+          "description": "Soma dos valores totais dos itens em centavos de Real"
+        },
+        "paymentTerms": {
+          "type": "string",
+          "description": "Condições e forma de pagamento em texto livre",
+          "maxLength": 1000
+        },
+        "pixKey": {
+          "type": "string",
+          "description": "Chave Pix para pagamento",
+          "maxLength": 100
+        },
+        "deliveryTime": {
+          "type": "string",
+          "description": "Prazo de entrega em texto livre",
+          "maxLength": 300
+        },
+        "deliveryDate": {
+          "type": "string",
+          "description": "Data de entrega prevista (DD/MM/AAAA)",
+          "maxLength": 30
+        },
+        "notes": {
+          "type": "string",
+          "description": "Observações gerais do pedido",
+          "maxLength": 3000
+        },
+        "version": {
+          "type": "number",
+          "description": "Número de versão sequencial para detecção de concorrência"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Data/hora de criação"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Data/hora da última alteração"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "E-mail de quem criou"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "E-mail da última alteração"
+        }
+      },
+      "required": ["orderNumber", "status", "date", "clientSnapshot", "items", "totalGeneralCents"]
+    },
+    "PaidService": {
+      "title": "PaidService",
+      "description": "Lançamentos e registros de prestação de serviços pagos e despesas operacionais",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "Data do serviço (YYYY-MM-DD ou DD/MM/AAAA)"
+        },
+        "time": {
+          "type": "string",
+          "description": "Horário do serviço (HH:MM)"
+        },
+        "service": {
+          "type": "string",
+          "description": "Nome ou descrição do serviço executado",
+          "maxLength": 500
+        },
+        "valueCents": {
+          "type": "number",
+          "description": "Valor pago pelo serviço em centavos"
+        },
+        "providerName": {
+          "type": "string",
+          "description": "Nome do prestador ou profissional",
+          "maxLength": 200
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Forma de pagamento (PIX, Dinheiro, etc.)"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Observações adicionais",
+          "maxLength": 2000
+        },
+        "category": {
+          "type": "string",
+          "description": "Categoria do serviço"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Data/hora de criação"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Data/hora da última alteração"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "E-mail do usuário que registrou"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "E-mail da última alteração"
+        }
+      },
+      "required": ["date", "time", "service", "valueCents"]
+    }
+  },
+  "firestore": {
+    "/authorized_users/{userEmail}": {
+      "schema": {
+        "$ref": "#/entities/AuthorizedUser"
+      },
+      "description": "Authorized accounts permitted to access the application"
+    },
+    "/company_settings/{settingId}": {
+      "schema": {
+        "$ref": "#/entities/CompanySettings"
+      },
+      "description": "Company configuration and defaults for documents"
+    },
+    "/clients/{clientId}": {
+      "schema": {
+        "$ref": "#/entities/Client"
+      },
+      "description": "Customer database records"
+    },
+    "/orders/{orderId}": {
+      "schema": {
+        "$ref": "#/entities/Order"
+      },
+      "description": "Budgets, Orders, and Service Orders"
+    },
+    "/paid_services/{serviceId}": {
+      "schema": {
+        "$ref": "#/entities/PaidService"
+      },
+      "description": "Paid outsourced or operational service expense records"
+    }
+  }
+}

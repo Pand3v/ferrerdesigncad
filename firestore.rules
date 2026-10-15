@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() &&
+        'email' in request.auth.token &&
+        request.auth.token.email is string &&
+        (
+          request.auth.token.email == 'ferreiraguih91@gmail.com' ||
+          request.auth.token.email == 'Ferreiraguih91@gmail.com' ||
+          request.auth.token.email.matches('^[fF][eE][rR][rR][eE][iI][rR][aA][gG][uU][iI][hH]91@gmail\\.com$') ||
+          request.auth.token.email.matches('^[fF][eE][rR][rR][eE][iI][rR][aA][gG][uU][iI][hH]91@googlemail\\.com$')
+        );
+    }
+
+    function isInitialAuthorizedEmail() {
+      return isSignedIn() &&
+        'email' in request.auth.token &&
+        request.auth.token.email is string &&
+        (
+          request.auth.token.email.lower() == 'silvanofilho@almaprintgrafica.com.br' ||
+          request.auth.token.email.lower() == 'contato@almaprintgrafica.com.br' ||
+          request.auth.token.email.lower() == 'comercial@almaprintgrafica.com.br' ||
+          request.auth.token.email.lower() == 'producao@almaprintgrafica.com.br'
+        );
+    }
+
+    function isAuthorized() {
+      return isSuperAdmin() || isInitialAuthorizedEmail() || (
+        isSignedIn() &&
+        'email' in request.auth.token &&
+        request.auth.token.email is string &&
+        (
+          exists(/databases/$(database)/documents/authorized_users/$(request.auth.token.email)) ||
+          exists(/databases/$(database)/documents/authorized_users/$(request.auth.token.email.lower()))
+        )
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Test connection doc
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Authorized users list: ONLY the Super Admin can add/remove permitted users!
+    match /authorized_users/{userEmail} {
+      allow get: if isSignedIn() && (
+        isAuthorized() ||
+        ('email' in request.auth.token && (request.auth.token.email == userEmail || request.auth.token.email.lower() == userEmail.lower()))
+      );
+      allow list: if isAuthorized();
+      allow write: if isSuperAdmin() || (
+        isInitialAuthorizedEmail() &&
+        request.auth.token.email.lower() == userEmail.lower()
+      );
+    }
+
+    // Company settings:
+    // - Read: public (allows displaying company logo and branding on login screen and public document views)
+    // - Full modifications (address, cnpj, phone, email, trade name, pix, etc.): strictly Super Admin!
+    // - Sequential counter increment (nextOrderNumber when generating orders): permitted for all authorized users!
+    match /company_settings/{settingId} {
+      allow read: if true;
+      allow create, delete: if isSuperAdmin();
+      allow update: if isSuperAdmin() || (
+        isAuthorized() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nextOrderNumber'])
+      );
+    }
+
+    // Clients registry
+    match /clients/{clientId} {
+      allow read, write: if isAuthorized();
+    }
+
+    // Orders, budgets, service orders
+    match /orders/{orderId} {
+      allow read, write: if isAuthorized();
+    }
+
+    // Paid outsourced & operational services expenses
+    match /paid_services/{serviceId} {
+      allow read, write: if isAuthorized();
+    }
+  }
+}
